@@ -1,0 +1,84 @@
+module figofsm (
+  input wire clk,                  // Clock input
+  input wire reset,                // Reset input
+  input wire input_data,           // Input data (0 or 1)
+  input wire [2:0] current_state,  // Current state input from the user
+  output reg [2:0] next_state      // Output representing the next state
+);
+
+  // Define the states
+  localparam [2:0] Room0 = 3'b000;
+  localparam [2:0] Room1 = 3'b001;
+  localparam [2:0] Room2 = 3'b010;
+  localparam [2:0] Room3 = 3'b011;
+  localparam [2:0] Room4 = 3'b100;
+  localparam [2:0] Room5 = 3'b101;
+  localparam [2:0] Room6 = 3'b110;
+  localparam [2:0] Room7 = 3'b111;
+
+  // State register
+  reg [2:0] state;
+
+  // Synchronous reset
+  always @(posedge clk) begin
+    if (reset)
+      state <= Room0;
+    else
+      state <= next_state;
+  end
+
+  // State transition and output logic
+  always @(state or input_data or current_state) begin
+    case (state)
+      Room0: begin
+        if (input_data)
+          next_state = Room1;
+        else
+          next_state = Room0;
+      end
+      Room1: begin
+        if (input_data)
+          next_state = Room4;
+        else
+          next_state = Room2;
+      end
+      Room2: begin
+        if (input_data)
+          next_state = Room4;
+        else
+          next_state = Room3;
+      end
+      Room3: begin
+        if (input_data)
+          next_state = Room0;
+        else
+          next_state = Room3;
+      end
+      Room4: begin
+        if (input_data)
+          next_state = Room7;
+        else
+          next_state = Room5;
+      end
+      Room5: begin
+        if (input_data)
+          next_state = Room6;
+        else
+          next_state = Room3;
+      end
+      Room6: begin
+        if (input_data)
+          next_state = Room7;
+        else
+          next_state = Room6;
+      end
+      Room7: begin
+        if (input_data)
+          next_state = Room1;
+        else
+          next_state = Room5;
+      end
+    endcase
+  end
+
+endmodule
